@@ -13,7 +13,7 @@ namespace EggenbergerGOL
     public partial class Form1 : Form
     {
         // The universe array
-        bool[,] universe = new bool[5, 5];
+        bool[,] universe = new bool[10, 10];
 
         // Drawing colors
         Color gridColor = Color.Black;
@@ -117,6 +117,11 @@ namespace EggenbergerGOL
                 // Tell Windows you need to repaint
                 graphicsPanel1.Invalidate();
             }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close(); //closes the main window
         }
     }
 }
