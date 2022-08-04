@@ -15,6 +15,8 @@ namespace EggenbergerGOL
         // The universe array
         bool[,] universe = new bool[10, 10];
 
+        bool play = false;
+
         // Drawing colors
         Color gridColor = Color.Black;
         Color cellColor = Color.Gray;
@@ -32,7 +34,7 @@ namespace EggenbergerGOL
             // Setup the timer
             timer.Interval = 100; // milliseconds
             timer.Tick += Timer_Tick;
-            timer.Enabled = true; // start timer running
+            timer.Enabled = false; // start timer running
         }
 
         private int CountNeighborsToroidal(int x, int y)
@@ -110,7 +112,10 @@ namespace EggenbergerGOL
         // The event called by the timer every Interval milliseconds.
         private void Timer_Tick(object sender, EventArgs e)
         {
+            
+           
             NextGeneration();
+            
         }
 
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
@@ -182,6 +187,16 @@ namespace EggenbergerGOL
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close(); //closes the main window
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            timer.Enabled = true;
+        }
+
+        private void toolStrip1_Click(object sender, EventArgs e)
+        {
+            timer.Enabled = false;
         }
     }
 }
