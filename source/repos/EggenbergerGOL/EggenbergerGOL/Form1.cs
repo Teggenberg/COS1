@@ -13,7 +13,7 @@ namespace EggenbergerGOL
     public partial class Form1 : Form
     {
         // The universe array
-        bool[,] universe = new bool[10, 10];
+        bool[,] universe = new bool[20, 20];
 
         bool play = false;
 
@@ -197,6 +197,11 @@ namespace EggenbergerGOL
         private void toolStrip1_Click(object sender, EventArgs e)
         {
             timer.Enabled = false;
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            NextGeneration();
         }
     }
 }
