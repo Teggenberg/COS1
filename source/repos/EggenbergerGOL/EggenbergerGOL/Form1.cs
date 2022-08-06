@@ -17,6 +17,8 @@ namespace EggenbergerGOL
         // scratch pad to store next generation array
         bool[,] scratchPad = new bool[30, 30];//new bool[universe.GetLength(0), universe.GetLength(1)];
 
+        bool seeNeighbors = true;
+
         // Drawing colors
         Color gridColor = Color.Black;
         Color cellColor = Color.Gray;
@@ -209,32 +211,35 @@ namespace EggenbergerGOL
 
             //int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
             //int cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
-            Font font = new Font("Arial", 10f);
-
-            StringFormat stringN = new StringFormat();
-            stringN.Alignment = StringAlignment.Center;
-            stringN.LineAlignment = StringAlignment.Center;
-
-            for (int y = 0; y < universe.GetLength(1); y++)
+           if (seeNeighbors)
             {
-                for (int x = 0; x < universe.GetLength(0); x++)
-                {
-                    int neighbors = CountNeighborsToroidal(x, y);
-                    Rectangle nRect = Rectangle.Empty;
-                    nRect.X = x * cellWidth;
-                    nRect.Y = y * cellHeight;
-                    nRect.Width = cellWidth;
-                    nRect.Height = cellHeight;
+                Font font = new Font("Arial", 10f);
 
-                    if (neighbors > 0)
+                StringFormat stringN = new StringFormat();
+                stringN.Alignment = StringAlignment.Center;
+                stringN.LineAlignment = StringAlignment.Center;
+
+                for (int y = 0; y < universe.GetLength(1); y++)
+                {
+                    for (int x = 0; x < universe.GetLength(0); x++)
                     {
-                        if (neighbors == 3)
+                        int neighbors = CountNeighborsToroidal(x, y);
+                        Rectangle nRect = Rectangle.Empty;
+                        nRect.X = x * cellWidth;
+                        nRect.Y = y * cellHeight;
+                        nRect.Width = cellWidth;
+                        nRect.Height = cellHeight;
+
+                        if (neighbors > 0)
                         {
-                            e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Green, nRect, stringN);
-                        }
-                        else
-                        {
-                            e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Red, nRect, stringN);
+                            if (neighbors == 3)
+                            {
+                                e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Green, nRect, stringN);
+                            }
+                            else
+                            {
+                                e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Red, nRect, stringN);
+                            }
                         }
                     }
                 }
@@ -300,6 +305,16 @@ namespace EggenbergerGOL
             }
 
             graphicsPanel1.Invalidate();
+        }
+
+        private void neighborCountToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            seeNeighbors = false;
+        }
+
+        private void neighborCountToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            seeNeighbors = false;
         }
     }
 }
