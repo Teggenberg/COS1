@@ -20,9 +20,10 @@ namespace EggenbergerGOL
         bool seeNeighbors = true;
 
         // Drawing colors
-        Color gridColor = Color.Black;
-        Color cellColor = Color.Gray;
-        Color gridXColor = Color.Red;
+        Color gridColor = Color.Black; //standard grid
+        Color cellColor = Color.Gray; //living cell color
+        Color gridXColor = Color.Red; //Grid X10 color
+        Color background = Color.Yellow; //establishing color for backbground rect
 
         // The Timer class
         Timer timer = new Timer();
@@ -168,6 +169,17 @@ namespace EggenbergerGOL
             Pen gridPenX = new Pen(gridXColor, 3);
             // A Brush for filling living cells interiors (color)
             Brush cellBrush = new SolidBrush(cellColor);
+            // brush to paint background
+            Brush backBrush = new SolidBrush(background);
+
+            // Rectangle for background
+            Rectangle backRect = Rectangle.Empty;
+            backRect.X = 0;
+            backRect.Y = 0;
+            backRect.Width = graphicsPanel1.ClientSize.Width;
+            backRect.Height = graphicsPanel1.ClientSize.Height;
+
+            e.Graphics.FillRectangle(backBrush, backRect);
 
             // Iterate through the universe in the y, top to bottom
             for (int y = 0; y < universe.GetLength(1); y++)
@@ -175,6 +187,7 @@ namespace EggenbergerGOL
                 // Iterate through the universe in the x, left to right
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
+                    
                     // A rectangle to represent each cell in pixels
                     Rectangle cellRect = Rectangle.Empty;
                     cellRect.X = x * cellWidth;
@@ -182,11 +195,16 @@ namespace EggenbergerGOL
                     cellRect.Width = cellWidth;
                     cellRect.Height = cellHeight;
 
+                    // Rectangle for grid X10
                     Rectangle cellXRect = Rectangle.Empty;
                     cellXRect.X = x * cellXWidth;
                     cellXRect.Y = y * cellXHeight;
                     cellXRect.Width = cellXWidth;
                     cellXRect.Height = cellXHeight;
+
+                    
+
+                    
 
                     // Fill the cell with a brush if alive
                     if (universe[x, y] == true)
@@ -206,6 +224,7 @@ namespace EggenbergerGOL
                     {
                         e.Graphics.DrawRectangle(gridPenX, cellXRect.X, cellXRect.Y, cellXRect.Width, cellXRect.Height);
                     }
+                    
                 }
             }
 
@@ -314,7 +333,67 @@ namespace EggenbergerGOL
 
         private void neighborCountToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            seeNeighbors = false;
+            seeNeighbors = true;
+        }
+
+        private void colorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void cellColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = cellColor;
+            if(DialogResult.OK == dlg.ShowDialog())
+            {
+                cellColor = dlg.Color;
+            }
+            graphicsPanel1.Invalidate();
+
+        }
+
+        private void gridColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = gridColor;
+            if(DialogResult.OK == dlg.ShowDialog())
+            {
+                gridColor = dlg.Color;
+            }
+            graphicsPanel1.Invalidate();
+        }
+
+        private void gridX10ColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = gridXColor;
+            if(DialogResult.OK == dlg.ShowDialog())
+            {
+                gridXColor = dlg.Color;
+            }
+            graphicsPanel1.Invalidate();
+        }
+
+        private void colorToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void backgroundColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = background;
+            if(DialogResult.OK == dlg.ShowDialog())
+            {
+                background = dlg.Color;
+            }
+            graphicsPanel1.Invalidate();
         }
     }
 }
