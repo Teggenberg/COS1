@@ -10,20 +10,27 @@ using System.Windows.Forms;
 
 namespace EggenbergerGOL
 {
+    
+
     public partial class Form1 : Form
     {
+        int uWidth = 30; //variable to manipulte universe width
+        int uHeight = 30; //varialble to manipulate universe height
+        int timerInt = 100; //variable to control timer intervals
+
         // The universe array
-        bool[,] universe = new bool[30, 30];
+        bool[,] universe; //array szeundelcared to allow manipulation with uWidth and uHeight
+
         // scratch pad to store next generation array
-        bool[,] scratchPad = new bool[30, 30];//new bool[universe.GetLength(0), universe.GetLength(1)];
+        bool[,] scratchPad; //array size not declared to allow manipulation with uWidth and uHeight
 
         bool seeNeighbors = true;
 
         // Drawing colors
         Color gridColor = Color.Black; //standard grid
         Color cellColor = Color.Gray; //living cell color
-        Color gridXColor = Color.Red; //Grid X10 color
-        Color background = Color.Yellow; //establishing color for backbground rect
+        Color gridXColor = Color.Black; //Grid X10 color
+        Color background = Color.White; //establishing color for backbground rect
 
         // The Timer class
         Timer timer = new Timer();
@@ -33,46 +40,45 @@ namespace EggenbergerGOL
 
         public Form1()
         {
+
+            universe = new bool[uWidth, uHeight]; //declare array size in constructor
+            scratchPad = new bool[uWidth, uHeight]; 
             InitializeComponent();
 
             // Setup the timer
-            timer.Interval = 100; // milliseconds
+            timer.Interval = timerInt; // milliseconds
             timer.Tick += Timer_Tick;
             timer.Enabled = false; // start timer running
         }
 
         private int CountNeighborsToroidal(int x, int y)
         {
-            int neighbors = 0;
-            int xLen = universe.GetLength(0);
+            int neighbors = 0; //variable that is returned once method is complete
+            int xLen = universe.GetLength(0); 
             int yLen = universe.GetLength(1);
 
-            for(int yOffset = -1; yOffset <= 1 ; yOffset++)
+            for(int yOffset = -1; yOffset <= 1 ; yOffset++) //checking cell above at, and below
             {
-                for(int xOffset = -1; xOffset <= 1; xOffset++) 
+                for(int xOffset = -1; xOffset <= 1; xOffset++) //checking cell to the left, at, and to the right
                 {
-                    int xCheck = x + xOffset;
-                    int yCheck = y + yOffset;
+                    int xCheck = x + xOffset; //using offset against x to check relative cells to x
+                    int yCheck = y + yOffset; //using offest against y to check retlative cells to y
 
-                    if (xOffset == 0 && yOffset == 0) continue;
-                    if (xCheck < 0) xCheck = xLen - 1;
+                    if (xOffset == 0 && yOffset == 0) continue; //skips over the center cell (not a neighbor)
+                    if (xCheck < 0) xCheck = xLen - 1; //moves to opposite side of univers if home cell is on border
                     if (yCheck < 0) yCheck = yLen - 1;
                     if (xCheck > xLen -1) xCheck = 0;
                     if (yCheck > yLen -1) yCheck = 0;
 
-                    if (universe[xCheck, yCheck] == true) neighbors++;
-
+                    if (universe[xCheck, yCheck] == true) neighbors++; //increments neighborcount if neighbor is 'true'
                 }
             }
-
-
             return neighbors;
         }
 
         // Calculate the next generation of cells
         private void NextGeneration()
-        {
-            
+        {            
             for (int y = 0; y < universe.GetLength(1); y++)
             {
                 for (int x = 0; x < universe.GetLength(0); x++)
@@ -154,6 +160,8 @@ namespace EggenbergerGOL
 
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
         {
+            
+
             // Calculate the width and height of each cell in pixels
             // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
             int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
@@ -329,6 +337,8 @@ namespace EggenbergerGOL
         private void neighborCountToolStripMenuItem_Click(object sender, EventArgs e)
         {
             seeNeighbors = false;
+            if(veiwNeighbors.Checked)  seeNeighbors = true;
+            graphicsPanel1.Invalidate();
         }
 
         private void neighborCountToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -394,6 +404,38 @@ namespace EggenbergerGOL
                 background = dlg.Color;
             }
             graphicsPanel1.Invalidate();
+        }
+
+        private void optionsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            UniverseModal dlg = new UniverseModal();
+            dlg.uniWidth = uWidth; //modal displays current width
+            dlg.uniHeight = uHeight; // modal displays current height
+            dlg.Time = timerInt; // modal displays current timer interval
+
+            
+            
+            if (DialogResult.OK == dlg.ShowDialog()) //updates universe width to value entered in dialog
+            {
+                if (dlg.uniWidth != uWidth || dlg.uniHeight != dlg.uniHeight) //condition to avoid clearing array unless values are updated.
+                {
+                    uWidth = dlg.uniWidth; //updates uWidth to new value
+                    uHeight = dlg.uniHeight; //updates uHeight to new value
+                    universe = new bool[uWidth, uHeight]; //creates new universe array with updated value
+                    scratchPad = new bool[uWidth, uHeight]; //creatsnew scratch arraty with updated value
+                }
+                
+                timerInt = dlg.Time;
+                timer.Interval = timerInt;
+
+                graphicsPanel1.Invalidate();         
+            }
+
+        }
+
+        private void modalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
