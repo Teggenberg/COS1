@@ -123,35 +123,41 @@ namespace EggenbergerGOL
             // Increment generation count
             generations++;
 
-            // Update status strip generations
-            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            
             graphicsPanel1.Invalidate();
+        }
+
+        private void StatusStripUpdate()
+        {
+            int alive = CellCount(); //to display living cells in bottom status strip
+            // Update status strip generations, interval, living cells, and current seed
+            toolStripStatusLabelGenerations.Text = "Generations: " + generations.ToString() + "    Interval: " + timerInt.ToString() + "ms    Living Cells: " + alive.ToString() + "    Seed: " + seedRand.ToString();
         }
 
         private int CellCount()
         {
-            int c = 0;
+            int c = 0; //int to be returned with living cell count
 
             for(int y = 0; y < universe.GetLength(1); y++)
             {
-                for(int x = 0; x < universe.GetLength(0); x++)
+                for(int x = 0; x < universe.GetLength(0); x++) //nested forloop to check each cell
                 {
-                    if (universe[x, y] == true) c++;
+                    if (universe[x, y] == true) c++; //if cell is alive, adds 1 to c
                 }
             }
 
-            return c;
+            return c; //returns total living cells
         }
 
         private void Randomize()
         {
-            Random rUniverse = new Random(seedRand);
+            Random rUniverse = new Random(seedRand); //allows variable to seed random object
 
             for(int y = 0; y< universe.GetLength(1); y++)
             {
                 for(int x = 0; x < universe.GetLength(0); x++)
                 {
-                    if (rUniverse.Next() % 2 == 0) universe[x, y] = true;
+                    if (rUniverse.Next() % 2 == 0) universe[x, y] = true; //checks random number to see if even or odd, even creates living cell, odd created dead cell
                     else universe[x, y] = false;
                 }
             }
@@ -159,17 +165,14 @@ namespace EggenbergerGOL
 
         // The event called by the timer every Interval milliseconds.
         private void Timer_Tick(object sender, EventArgs e)
-        {
-            
-           
-            NextGeneration();
-            
+        {                       
+            NextGeneration(); //calls next gen every interval           
         }
 
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
         {
-            
 
+            StatusStripUpdate();
             // Calculate the width and height of each cell in pixels
             // CELL WIDTH = WINDOW WIDTH / NUMBER OF CELLS IN X
             int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
@@ -230,7 +233,7 @@ namespace EggenbergerGOL
                         e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
 
                         //bold outline for grid x 10 lines, separate grid to allow for separate color options from standard grid
-                        if ((x * 10) < universe.GetLength(0) && (y * 10) < universe.GetLength(1))
+                        if ((x * 10) < universe.GetLength(0) && (y * 10) < universe.GetLength(1)) //makes sure the 10x grid is within the bounds of the standard grid
                         {
                             e.Graphics.DrawRectangle(gridPenX, cellXRect.X, cellXRect.Y, cellXRect.Width, cellXRect.Height);
                         }
@@ -239,41 +242,41 @@ namespace EggenbergerGOL
                 }
             }
 
-           if (seeNeighbors)
+           if (seeNeighbors) //bool that can be toggled by user to see neighbor count
             {
-                Font font = new Font("Arial", 10f);
+                Font font = new Font("Arial", 10f); //font and size used to paint neighbor count in cells
 
                 StringFormat stringN = new StringFormat();
-                stringN.Alignment = StringAlignment.Center;
+                stringN.Alignment = StringAlignment.Center; //allows neighbor count to be centered within it's cell
                 stringN.LineAlignment = StringAlignment.Center;
 
                 for (int y = 0; y < universe.GetLength(1); y++)
                 {
-                    for (int x = 0; x < universe.GetLength(0); x++)
+                    for (int x = 0; x < universe.GetLength(0); x++)  //nested forloop to paint neighbor count in each cell
                     {
-                        int neighbors = CountNeighborsToroidal(x, y);
+                        int neighbors = CountNeighborsToroidal(x, y); //establishes number to be painted
                         Rectangle nRect = Rectangle.Empty;
                         nRect.X = x * cellWidth;
-                        nRect.Y = y * cellHeight;
+                        nRect.Y = y * cellHeight;  //creates the boundary of the cell to align with the grid
                         nRect.Width = cellWidth;
                         nRect.Height = cellHeight;
 
-                        if (neighbors > 0)
+                        if (neighbors > 0)  //condition to not paint neighbor count if there are no living neighbors
                         {
-                            if (neighbors == 3)
+                            if (neighbors == 3) //green for 3 nighbor cells, indiciating they will come to life, or remain livnig
                             {
                                 e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Green, nRect, stringN);
                             }
                             else
                             {
-                                e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Red, nRect, stringN);
+                                e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Red, nRect, stringN); //red for cells that will remain dead, or could die unless they are have 2 neighbors
                             }
                         }
                     }
                 }
             }
 
-            if (seeHUD)
+            if (seeHUD) //bool user can toggle to turn heads up display on and off
             {
                 int hcellWidth = graphicsPanel1.ClientSize.Width; //establishing cell size for neighbor text
                 int hcellHeight = graphicsPanel1.ClientSize.Height;
@@ -283,19 +286,19 @@ namespace EggenbergerGOL
                 stringN.Alignment = StringAlignment.Near;  //code that will allow for centering neighbor count within cell
                 stringN.LineAlignment = StringAlignment.Far;
                 int cells = CellCount();
-                string hudG = "Generations: " + generations + "\nCell Count: " + cells + "\nBoundary Type:" + "\nUniverse Dimensions: "  + uWidth + "x" + uHeight ;
+                string hudG = "Generations: " + generations + "\nCell Count: " + cells + "\nBoundary Type:" + "\nUniverse Dimensions: "  + uWidth + "x" + uHeight ; //the text contained within the HUD
 
 
                 
                 Rectangle nRect = Rectangle.Empty;
                 nRect.X = 0;
                 nRect.Y = 0;
-                nRect.Width = hcellWidth;
+                nRect.Width = hcellWidth;  //create a rectangle the size of the client window
                 nRect.Height = hcellHeight;
 
 
 
-                e.Graphics.DrawString(hudG, font, Brushes.Red, nRect, stringN);
+                e.Graphics.DrawString(hudG, font, Brushes.Red, nRect, stringN); //paints the HUD
             }
 
             // Cleaning up pens and brushes
@@ -362,8 +365,8 @@ namespace EggenbergerGOL
 
         private void neighborCountToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            seeNeighbors = false;
-            if(veiwNeighbors.Checked)  seeNeighbors = true;
+            seeNeighbors = false; //tunrs off neighbor count visibility
+            if(veiwNeighbors.Checked)  seeNeighbors = true; //if box is checked, turns on neighbor count
             graphicsPanel1.Invalidate();
         }
 
@@ -516,20 +519,20 @@ namespace EggenbergerGOL
 
         private void fromCurrentSeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Randomize();
+            Randomize(); //random new array with current seed
             graphicsPanel1.Invalidate();
         }
 
         private void fromSeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SeedModal dlg = new SeedModal();
-            dlg.Seed = seedRand;
+            SeedModal dlg = new SeedModal(); //displays menu for Randomizing 
+            dlg.Seed = seedRand; //sets value to current seed
 
             if (DialogResult.OK == dlg.ShowDialog())
             {
-                seedRand = dlg.Seed;
-                Randomize();
-                graphicsPanel1.Invalidate();
+                seedRand = dlg.Seed; //changes seed to value entered by user
+                Randomize(); //randomizes array with new seed
+                graphicsPanel1.Invalidate(); //refreshes screen in realtim
             }
         }
     }

@@ -48,7 +48,7 @@ namespace EggenbergerGOL
             // 
             // numericUpDownSeed
             // 
-            this.numericUpDownSeed.Location = new System.Drawing.Point(107, 50);
+            this.numericUpDownSeed.Location = new System.Drawing.Point(96, 50);
             this.numericUpDownSeed.Maximum = new decimal(new int[] {
             2147483647,
             0,
