@@ -9,3 +9,4 @@ C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\Eggenbe
 C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.exe
 C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.pdb
 C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.UniverseModal.resources
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.SeedModal.resources

@@ -57,6 +57,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SeedModal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SeedModal.Designer.cs">
+      <DependentUpon>SeedModal.cs</DependentUpon>
+    </Compile>
     <Compile Include="UniverseModal.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -76,6 +82,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SeedModal.resx">
+      <DependentUpon>SeedModal.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UniverseModal.resx">
       <DependentUpon>UniverseModal.cs</DependentUpon>
     </EmbeddedResource>

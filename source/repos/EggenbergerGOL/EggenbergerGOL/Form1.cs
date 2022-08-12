@@ -17,6 +17,7 @@ namespace EggenbergerGOL
         int uWidth = 30; //variable to manipulte universe width
         int uHeight = 30; //varialble to manipulate universe height
         int timerInt = 100; //variable to control timer intervals
+        int seedRand = 52;
 
         // The universe array
         bool[,] universe; //array szeundelcared to allow manipulation with uWidth and uHeight
@@ -24,13 +25,15 @@ namespace EggenbergerGOL
         // scratch pad to store next generation array
         bool[,] scratchPad; //array size not declared to allow manipulation with uWidth and uHeight
 
-        bool seeNeighbors = true;
+        bool seeNeighbors = true; //bool to allow for toggle of visibilty neighbor count
+        bool seeGrid = true;  //bool to allow for visibility of grid
+        bool seeHUD = true;
 
         // Drawing colors
         Color gridColor = Color.Black; //standard grid
         Color cellColor = Color.Gray; //living cell color
         Color gridXColor = Color.Black; //Grid X10 color
-        Color background = Color.White; //establishing color for backbground rect
+        Color background; //= Color.White; //establishing color for backbground rect
 
         // The Timer class
         Timer timer = new Timer();
@@ -40,7 +43,6 @@ namespace EggenbergerGOL
 
         public Form1()
         {
-
             universe = new bool[uWidth, uHeight]; //declare array size in constructor
             scratchPad = new bool[uWidth, uHeight]; 
             InitializeComponent();
@@ -49,13 +51,19 @@ namespace EggenbergerGOL
             timer.Interval = timerInt; // milliseconds
             timer.Tick += Timer_Tick;
             timer.Enabled = false; // start timer running
+
+            //reading in the settings for color options
+            background = Properties.Settings.Default.BackgroundColor;
+            gridColor = Properties.Settings.Default.GridColor;
+            gridXColor = Properties.Settings.Default.Grid10Color;
+            cellColor = Properties.Settings.Default.CellColor;
         }
 
         private int CountNeighborsToroidal(int x, int y)
         {
             int neighbors = 0; //variable that is returned once method is complete
-            int xLen = universe.GetLength(0); 
-            int yLen = universe.GetLength(1);
+            int xLen = universe.GetLength(0); //variable to determine width oif grid
+            int yLen = universe.GetLength(1); //variable to determine height of grid
 
             for(int yOffset = -1; yOffset <= 1 ; yOffset++) //checking cell above at, and below
             {
@@ -67,7 +75,7 @@ namespace EggenbergerGOL
                     if (xOffset == 0 && yOffset == 0) continue; //skips over the center cell (not a neighbor)
                     if (xCheck < 0) xCheck = xLen - 1; //moves to opposite side of univers if home cell is on border
                     if (yCheck < 0) yCheck = yLen - 1;
-                    if (xCheck > xLen -1) xCheck = 0;
+                    if (xCheck > xLen -1) xCheck = 0; //checks if cell is at the last index of the array
                     if (yCheck > yLen -1) yCheck = 0;
 
                     if (universe[xCheck, yCheck] == true) neighbors++; //increments neighborcount if neighbor is 'true'
@@ -79,7 +87,7 @@ namespace EggenbergerGOL
         // Calculate the next generation of cells
         private void NextGeneration()
         {            
-            for (int y = 0; y < universe.GetLength(1); y++)
+            for (int y = 0; y < universe.GetLength(1); y++)  //cloning universe array into scratchpad
             {
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
@@ -87,17 +95,17 @@ namespace EggenbergerGOL
                 }
             }
 
-            for (int y = 0; y < universe.GetLength(1); y++)
+            for (int y = 0; y < universe.GetLength(1); y++)  // nested forloop to check every cell in array
             {
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
-                    int neigbors = CountNeighborsToroidal(x, y);
+                    int neigbors = CountNeighborsToroidal(x, y); //stores cells neighborcount into variable
                     if (universe[x,y] == true)
                     {
                         if(neigbors > 3) scratchPad[x, y] = false;  
                         if(neigbors < 2) scratchPad[x, y] = false;
                     }
-                    if (universe[x,y] == false)
+                    if (universe[x,y] == false)                         //implementation of the 4 rules. store next gen into scratch pad
                     {
                         if (neigbors == 3) scratchPad[x, y] = true;
                     }
@@ -106,7 +114,7 @@ namespace EggenbergerGOL
 
             for (int y = 0; y < universe.GetLength(1); y++)
             {
-                for (int x = 0; x < universe.GetLength(0); x++)
+                for (int x = 0; x < universe.GetLength(0); x++)  //copying next generation into universe
                 {
                     universe[x, y] = scratchPad[x, y];
                 }
@@ -120,31 +128,31 @@ namespace EggenbergerGOL
             graphicsPanel1.Invalidate();
         }
 
-        private void DisplayNeighbors()
+        private int CellCount()
         {
-            int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
-            int cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
-            Font font = new Font("Arial", 20f);
+            int c = 0;
 
-            StringFormat stringN = new StringFormat();
-            stringN.Alignment = StringAlignment.Center;
-            stringN.LineAlignment = StringAlignment.Center;
-
-            for (int y = 0; y < universe.GetLength(1); y++)
+            for(int y = 0; y < universe.GetLength(1); y++)
             {
-                for (int x = 0; x < universe.GetLength(0); x++)
+                for(int x = 0; x < universe.GetLength(0); x++)
                 {
-                    int neighbors = CountNeighborsToroidal(x, y);
-                    Rectangle nRect = Rectangle.Empty;
-                    nRect.X = x * cellWidth;
-                    nRect.Y = y * cellHeight;
-                    nRect.Width = cellWidth;
-                    nRect.Height = cellHeight;
+                    if (universe[x, y] == true) c++;
+                }
+            }
 
-                    if (neighbors > 0)
-                    {
-                        //e.Graphics.DrawString(neighbors.ToString(), font, Brushes.Black, nRect, stringN);
-                    }
+            return c;
+        }
+
+        private void Randomize()
+        {
+            Random rUniverse = new Random(seedRand);
+
+            for(int y = 0; y< universe.GetLength(1); y++)
+            {
+                for(int x = 0; x < universe.GetLength(0); x++)
+                {
+                    if (rUniverse.Next() % 2 == 0) universe[x, y] = true;
+                    else universe[x, y] = false;
                 }
             }
         }
@@ -209,35 +217,28 @@ namespace EggenbergerGOL
                     cellXRect.Y = y * cellXHeight;
                     cellXRect.Width = cellXWidth;
                     cellXRect.Height = cellXHeight;
-
-                    
-
-                    
-
+           
                     // Fill the cell with a brush if alive
                     if (universe[x, y] == true)
                     {
                         e.Graphics.FillRectangle(cellBrush, cellRect);
                     }
 
-                    
-                    
-                    
-                    
-
-                    // Outline the cell with a pen
-                    e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
-
-                    if ((x * 10) < universe.GetLength(0) && (y * 10) < universe.GetLength(1))
+                    if (seeGrid) //bool to allow menu toggle for grid visibility
                     {
-                        e.Graphics.DrawRectangle(gridPenX, cellXRect.X, cellXRect.Y, cellXRect.Width, cellXRect.Height);
+                        // Outline the cell with a pen
+                        e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
+
+                        //bold outline for grid x 10 lines, separate grid to allow for separate color options from standard grid
+                        if ((x * 10) < universe.GetLength(0) && (y * 10) < universe.GetLength(1))
+                        {
+                            e.Graphics.DrawRectangle(gridPenX, cellXRect.X, cellXRect.Y, cellXRect.Width, cellXRect.Height);
+                        }
                     }
                     
                 }
             }
 
-            //int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
-            //int cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
            if (seeNeighbors)
             {
                 Font font = new Font("Arial", 10f);
@@ -270,6 +271,31 @@ namespace EggenbergerGOL
                         }
                     }
                 }
+            }
+
+            if (seeHUD)
+            {
+                int hcellWidth = graphicsPanel1.ClientSize.Width; //establishing cell size for neighbor text
+                int hcellHeight = graphicsPanel1.ClientSize.Height;
+                Font font = new Font("Arial", 16f); //declare font and point size for neighbor count
+
+                StringFormat stringN = new StringFormat();
+                stringN.Alignment = StringAlignment.Near;  //code that will allow for centering neighbor count within cell
+                stringN.LineAlignment = StringAlignment.Far;
+                int cells = CellCount();
+                string hudG = "Generations: " + generations + "\nCell Count: " + cells + "\nBoundary Type:" + "\nUniverse Dimensions: "  + uWidth + "x" + uHeight ;
+
+
+                
+                Rectangle nRect = Rectangle.Empty;
+                nRect.X = 0;
+                nRect.Y = 0;
+                nRect.Width = hcellWidth;
+                nRect.Height = hcellHeight;
+
+
+
+                e.Graphics.DrawString(hudG, font, Brushes.Red, nRect, stringN);
             }
 
             // Cleaning up pens and brushes
@@ -330,7 +356,7 @@ namespace EggenbergerGOL
                     universe[x, y] = false;
                 }
             }
-
+            generations = 0;
             graphicsPanel1.Invalidate();
         }
 
@@ -402,6 +428,7 @@ namespace EggenbergerGOL
             if(DialogResult.OK == dlg.ShowDialog())
             {
                 background = dlg.Color;
+                
             }
             graphicsPanel1.Invalidate();
         }
@@ -436,6 +463,74 @@ namespace EggenbergerGOL
         private void modalToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void gridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            seeGrid = false;
+            if (showGrid.Checked) seeGrid = true;
+            graphicsPanel1.Invalidate();
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Properties.Settings.Default.BackgroundColor = background;
+            Properties.Settings.Default.GridColor = gridColor;
+            Properties.Settings.Default.Grid10Color = gridXColor;
+            Properties.Settings.Default.CellColor = cellColor;
+            Properties.Settings.Default.Save();
+        }
+
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Reset();
+
+            //reading in the settings for color options
+            background = Properties.Settings.Default.BackgroundColor;
+            gridColor = Properties.Settings.Default.GridColor;
+            gridXColor = Properties.Settings.Default.Grid10Color;
+            cellColor = Properties.Settings.Default.CellColor;
+
+            graphicsPanel1.Invalidate();
+        }
+
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Reload();
+
+            //reading in the settings for color options
+            background = Properties.Settings.Default.BackgroundColor;
+            gridColor = Properties.Settings.Default.GridColor;
+            gridXColor = Properties.Settings.Default.Grid10Color;
+            cellColor = Properties.Settings.Default.CellColor;
+
+            graphicsPanel1.Invalidate();
+        }
+
+        private void headsUpDisplayToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            seeHUD = false; //turns off HUD
+            if (headsUpDisplay.Checked) seeHUD = true; //if box is checked, HUD on.
+            graphicsPanel1.Invalidate();
+        }
+
+        private void fromCurrentSeedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Randomize();
+            graphicsPanel1.Invalidate();
+        }
+
+        private void fromSeedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SeedModal dlg = new SeedModal();
+            dlg.Seed = seedRand;
+
+            if (DialogResult.OK == dlg.ShowDialog())
+            {
+                seedRand = dlg.Seed;
+                Randomize();
+                graphicsPanel1.Invalidate();
+            }
         }
     }
 }
