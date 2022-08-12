@@ -28,6 +28,7 @@ namespace EggenbergerGOL
         bool seeNeighbors = true; //bool to allow for toggle of visibilty neighbor count
         bool seeGrid = true;  //bool to allow for visibility of grid
         bool seeHUD = true;
+        bool toroidal = true;
 
         // Drawing colors
         Color gridColor = Color.Black; //standard grid
@@ -84,6 +85,38 @@ namespace EggenbergerGOL
             return neighbors;
         }
 
+        private int CountNeighborsFinite(int x, int y)
+        {
+            int nCount = 0;
+            int xLen = universe.GetLength(0);
+            int yLen = universe.GetLength(1);
+
+            
+
+            for(int yOffset = -1; yOffset <= 1; yOffset++)
+            {
+                for(int xOffset = -1; xOffset <= 1; xOffset++)
+                {
+                    int xCheck = x + xOffset;
+                    int yCheck = y + yOffset;
+                    if (xCheck < 0) continue;
+                    if (yCheck < 0) continue;
+                    if (xCheck >= xLen) continue;
+                    if (yCheck >= yLen) continue;
+                    //if (xCheck != x && xCheck != xLen) xCheck += xOffset;
+                    //if (yCheck != 0 && yCheck != yLen) yCheck += yOffset;
+                    if ((xOffset == 0) && (yOffset == 0)) continue;
+
+                    if (universe[xCheck, yCheck] == true) nCount++;
+
+                }
+            }
+
+
+            return nCount;
+            
+        }
+
         // Calculate the next generation of cells
         private void NextGeneration()
         {            
@@ -99,15 +132,18 @@ namespace EggenbergerGOL
             {
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
-                    int neigbors = CountNeighborsToroidal(x, y); //stores cells neighborcount into variable
+                    int neighbors;
+                    if (toroidal) neighbors = CountNeighborsToroidal(x, y); //toggle for choice of toroidal or finite universe
+                    else neighbors = CountNeighborsFinite(x, y); 
+                    
                     if (universe[x,y] == true)
                     {
-                        if(neigbors > 3) scratchPad[x, y] = false;  
-                        if(neigbors < 2) scratchPad[x, y] = false;
+                        if(neighbors > 3) scratchPad[x, y] = false;  
+                        if(neighbors < 2) scratchPad[x, y] = false;
                     }
                     if (universe[x,y] == false)                         //implementation of the 4 rules. store next gen into scratch pad
                     {
-                        if (neigbors == 3) scratchPad[x, y] = true;
+                        if (neighbors == 3) scratchPad[x, y] = true;
                     }
                 }
             }
@@ -130,6 +166,7 @@ namespace EggenbergerGOL
         private void StatusStripUpdate()
         {
             int alive = CellCount(); //to display living cells in bottom status strip
+            
             // Update status strip generations, interval, living cells, and current seed
             toolStripStatusLabelGenerations.Text = "Generations: " + generations.ToString() + "    Interval: " + timerInt.ToString() + "ms    Living Cells: " + alive.ToString() + "    Seed: " + seedRand.ToString();
         }
@@ -254,7 +291,10 @@ namespace EggenbergerGOL
                 {
                     for (int x = 0; x < universe.GetLength(0); x++)  //nested forloop to paint neighbor count in each cell
                     {
-                        int neighbors = CountNeighborsToroidal(x, y); //establishes number to be painted
+                        int neighbors;
+                        if (toroidal) neighbors = CountNeighborsToroidal(x, y);
+                        else neighbors = CountNeighborsFinite(x, y);
+
                         Rectangle nRect = Rectangle.Empty;
                         nRect.X = x * cellWidth;
                         nRect.Y = y * cellHeight;  //creates the boundary of the cell to align with the grid
@@ -282,11 +322,15 @@ namespace EggenbergerGOL
                 int hcellHeight = graphicsPanel1.ClientSize.Height;
                 Font font = new Font("Arial", 16f); //declare font and point size for neighbor count
 
+                string boundary;
+                if (toroidal) boundary = " Toroidal";
+                else boundary = " Finite";
+
                 StringFormat stringN = new StringFormat();
                 stringN.Alignment = StringAlignment.Near;  //code that will allow for centering neighbor count within cell
                 stringN.LineAlignment = StringAlignment.Far;
                 int cells = CellCount();
-                string hudG = "Generations: " + generations + "\nCell Count: " + cells + "\nBoundary Type:" + "\nUniverse Dimensions: "  + uWidth + "x" + uHeight ; //the text contained within the HUD
+                string hudG = "Generations: " + generations + "\nCell Count: " + cells + "\nBoundary Type:" + boundary + "\nUniverse Dimensions: "  + uWidth + "x" + uHeight ; //the text contained within the HUD
 
 
                 
@@ -365,8 +409,19 @@ namespace EggenbergerGOL
 
         private void neighborCountToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            seeNeighbors = false; //tunrs off neighbor count visibility
-            if(veiwNeighbors.Checked)  seeNeighbors = true; //if box is checked, turns on neighbor count
+            if(seeNeighbors == true)
+            {
+                seeNeighbors = false;
+                veiwNeighbors.Checked = false; //checks bool and toggles it. updates check boxes in menu and context menu
+                cNeighbors.Checked = false;
+            }
+            else
+            {
+                seeNeighbors = true;
+                veiwNeighbors.Checked = true; //toggles bool to turn on neighbors, updates check boxes in both menus
+                cNeighbors.Checked = true;
+            }
+            
             graphicsPanel1.Invalidate();
         }
 
@@ -470,8 +525,19 @@ namespace EggenbergerGOL
 
         private void gridToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            seeGrid = false;
-            if (showGrid.Checked) seeGrid = true;
+            if (seeGrid == true)
+            {
+                seeGrid = false;         //toggles bool based on current state, updates check boxes for menu and context menu
+                cGrid.Checked = false;
+                showGrid.Checked = false;
+            }
+            else
+            {
+                seeGrid = true;
+                cGrid.Checked = true;      //toggles bool based on current state, updates check boxes accoridingly
+                showGrid.Checked = true;
+            }
+            
             graphicsPanel1.Invalidate();
         }
 
@@ -512,9 +578,21 @@ namespace EggenbergerGOL
 
         private void headsUpDisplayToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            seeHUD = false; //turns off HUD
-            if (headsUpDisplay.Checked) seeHUD = true; //if box is checked, HUD on.
+            if(seeHUD == true)
+            {
+                seeHUD = false;
+                headsUpDisplay.Checked = false; //toggles bool from current state, and updates both check-boxes accordingly
+                cHUD.Checked = false;
+            }
+            else
+            {
+                seeHUD = true;
+                headsUpDisplay.Checked = true; //toggles bool from current state, and updates both check-boxes accordingly
+                cHUD.Checked = true;
+            }
+
             graphicsPanel1.Invalidate();
+
         }
 
         private void fromCurrentSeedToolStripMenuItem_Click(object sender, EventArgs e)
@@ -534,6 +612,23 @@ namespace EggenbergerGOL
                 Randomize(); //randomizes array with new seed
                 graphicsPanel1.Invalidate(); //refreshes screen in realtim
             }
+        }
+
+        private void finiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            toroidal = false;
+            if (finiteM.Checked) toroidalM.Checked = false;
+            graphicsPanel1.Invalidate();
+        }
+
+        private void toroidalM_Click(object sender, EventArgs e)
+        {
+            if (toroidalM.Checked)
+            {
+                toroidal = true;
+                finiteM.Checked = false;
+            }
+            graphicsPanel1.Invalidate();
         }
     }
 }
