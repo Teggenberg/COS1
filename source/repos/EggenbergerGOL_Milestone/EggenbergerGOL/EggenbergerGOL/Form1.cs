@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 
 namespace EggenbergerGOL
 {
@@ -45,16 +44,6 @@ namespace EggenbergerGOL
 
         public Form1()
         {
-            //reading in the settings for color options
-            background = Properties.Settings.Default.BackgroundColor;
-            gridColor = Properties.Settings.Default.GridColor;
-            gridXColor = Properties.Settings.Default.Grid10Color;
-            cellColor = Properties.Settings.Default.CellColor;
-            //reading settings for geid dimensions and time interval
-            uWidth = Properties.Settings.Default.GridWidth;
-            uHeight = Properties.Settings.Default.GridHeight;
-            timerInt = Properties.Settings.Default.Interval;
-
             universe = new bool[uWidth, uHeight]; //declare array size in constructor
             scratchPad = new bool[uWidth, uHeight]; 
             InitializeComponent();
@@ -64,15 +53,11 @@ namespace EggenbergerGOL
             timer.Tick += Timer_Tick;
             timer.Enabled = false; // start timer running
 
-            /*//reading in the settings for color options
+            //reading in the settings for color options
             background = Properties.Settings.Default.BackgroundColor;
             gridColor = Properties.Settings.Default.GridColor;
             gridXColor = Properties.Settings.Default.Grid10Color;
             cellColor = Properties.Settings.Default.CellColor;
-            //reading settings for geid dimensions and time interval
-            uWidth = Properties.Settings.Default.GridWidth;
-            uHeight = Properties.Settings.Default.GridHeight;
-            timerInt = Properties.Settings.Default.Interval;*/
         }
 
         private int CountNeighborsToroidal(int x, int y)
@@ -203,7 +188,6 @@ namespace EggenbergerGOL
 
         private void Randomize()
         {
-            
             Random rUniverse = new Random(seedRand); //allows variable to seed random object
 
             for(int y = 0; y< universe.GetLength(1); y++)
@@ -397,17 +381,17 @@ namespace EggenbergerGOL
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            timer.Enabled = true; //play button toggles the timer on
+            timer.Enabled = true;
         }
 
         private void toolStrip1_Click(object sender, EventArgs e)
         {
-            timer.Enabled = false; //pause button toggles timer off
+            timer.Enabled = false;
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
-            NextGeneration(); //next button calls Nextgeneraton once, to see the next step in GOL
+            NextGeneration();
         }
 
         private void newToolStripButton_Click(object sender, EventArgs e)
@@ -563,9 +547,6 @@ namespace EggenbergerGOL
             Properties.Settings.Default.GridColor = gridColor;
             Properties.Settings.Default.Grid10Color = gridXColor;
             Properties.Settings.Default.CellColor = cellColor;
-            Properties.Settings.Default.GridWidth = uWidth;
-            Properties.Settings.Default.GridHeight = uHeight;
-            Properties.Settings.Default.Interval = timerInt;
             Properties.Settings.Default.Save();
         }
 
@@ -578,9 +559,6 @@ namespace EggenbergerGOL
             gridColor = Properties.Settings.Default.GridColor;
             gridXColor = Properties.Settings.Default.Grid10Color;
             cellColor = Properties.Settings.Default.CellColor;
-            uWidth = Properties.Settings.Default.GridWidth;
-            uHeight = Properties.Settings.Default.GridHeight;
-            timerInt = Properties.Settings.Default.Interval;
 
             graphicsPanel1.Invalidate();
         }
@@ -650,98 +628,6 @@ namespace EggenbergerGOL
                 toroidal = true;
                 finiteM.Checked = false;
             }
-            graphicsPanel1.Invalidate();
-        }
-
-        private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //generates a number from current time ex.(3:45:15pm would become 154515) and assigns it to seedRand
-            seedRand = ((int)DateTime.Now.Hour * 10000) + ((int)DateTime.Now.Minute * 100) + (int)DateTime.Now.Second; 
-            Randomize(); //calls randomize with new seed
-            graphicsPanel1.Invalidate();
-        }
-
-        private void saveButton_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Filter = "All Files|*.*|Cells|*.cells";
-            dlg.FilterIndex = 2; dlg.DefaultExt = "cells";
-
-            if (DialogResult.OK == dlg.ShowDialog())
-            {
-                StreamWriter writer = new StreamWriter(dlg.FileName);
-
-                for (int y = 0; y < universe.GetLength(1); y++)
-                {
-                    string currentLine = string.Empty;
-                    for (int x = 0; x < universe.GetLength(0); x++)
-                    {
-                        if (universe[x, y] == true)
-                        {
-                            currentLine = currentLine + "O";
-                        }
-                        else
-                        {
-                            currentLine = currentLine + ".";
-                        }
-                    }
-                    writer.WriteLine(currentLine);
-                }
-                writer.Close();
-            }
-        }
-
-        private void openButton_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = "All Files|*.*|Cells|*.cells";
-            dlg.FilterIndex = 2;
-
-
-            if(DialogResult.OK == dlg.ShowDialog())
-            {
-                StreamReader read = new StreamReader(dlg.FileName);
-                int xLen = 0;
-                int yLen = 0;
-
-                while (!read.EndOfStream)
-                {
-                    string row = read.ReadLine();
-                    if (row[0] == 'O'||row[0] == '.')
-                    {
-                        yLen++;
-                        xLen = row.Length;
-                    }
-                    
-                }
-
-                
-
-                uWidth = xLen;
-                uHeight = yLen;
-                universe = new bool[uWidth, uHeight]; //creates new universe array with updated value
-                scratchPad = new bool[uWidth, uHeight]; //creatsnew scratch arraty with updated value
-
-                read.BaseStream.Seek(0, SeekOrigin.Begin);
-                int y = 0;
-                while (!read.EndOfStream)
-                {
-                    
-                    string row = read.ReadLine();
-                    if (row[0] == 'O'||row[0] == '.')
-                    {
-                        for(int x = 0; x < row.Length; x++)
-                        {
-                            if (row[x] == 'O') universe[x, y] = true;
-                            else universe[x, y] = false;
-                        }
-                        y++;
-                    }
-                    
-                }
-                read.Close();
-            }
-            
             graphicsPanel1.Invalidate();
         }
     }

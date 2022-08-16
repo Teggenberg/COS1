@@ -70,41 +70,5 @@ namespace EggenbergerGOL.Properties {
                 this["CellColor"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("30")]
-        public int GridWidth {
-            get {
-                return ((int)(this["GridWidth"]));
-            }
-            set {
-                this["GridWidth"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("30")]
-        public int GridHeight {
-            get {
-                return ((int)(this["GridHeight"]));
-            }
-            set {
-                this["GridHeight"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public int Interval {
-            get {
-                return ((int)(this["Interval"]));
-            }
-            set {
-                this["Interval"] = value;
-            }
-        }
     }
 }

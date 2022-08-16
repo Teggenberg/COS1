@@ -83,7 +83,7 @@ namespace EggenbergerGOL
             // 
             this.numericUpDownHeight.Location = new System.Drawing.Point(197, 141);
             this.numericUpDownHeight.Maximum = new decimal(new int[] {
-            500,
+            50,
             0,
             0,
             0});
@@ -106,7 +106,7 @@ namespace EggenbergerGOL
             this.numericUpDownWidth.AccessibleName = "numericWidth";
             this.numericUpDownWidth.Location = new System.Drawing.Point(197, 101);
             this.numericUpDownWidth.Maximum = new decimal(new int[] {
-            500,
+            50,
             0,
             0,
             0});
@@ -123,7 +123,6 @@ namespace EggenbergerGOL
             0,
             0,
             0});
-            this.numericUpDownWidth.ValueChanged += new System.EventHandler(this.numericUpDownWidth_ValueChanged);
             // 
             // label1
             // 

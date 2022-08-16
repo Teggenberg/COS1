@@ -1,0 +1,12 @@
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\bin\Debug\EggenbergerGOL.exe.config
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\bin\Debug\EggenbergerGOL.exe
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\bin\Debug\EggenbergerGOL.pdb
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.csproj.AssemblyReference.cache
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.Form1.resources
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.Properties.Resources.resources
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.csproj.GenerateResource.cache
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.csproj.CoreCompileInputs.cache
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.exe
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.pdb
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.UniverseModal.resources
+C:\Users\timeg\COS1\source\repos\EggenbergerGOL\EggenbergerGOL\obj\Debug\EggenbergerGOL.SeedModal.resources
