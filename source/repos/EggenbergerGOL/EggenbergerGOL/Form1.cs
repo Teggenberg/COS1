@@ -134,14 +134,16 @@ namespace EggenbergerGOL
 
         // Calculate the next generation of cells
         private void NextGeneration()
-        {            
+        {
             for (int y = 0; y < universe.GetLength(1); y++)  //cloning universe array into scratchpad
             {
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
-                    scratchPad[x,y] = universe[x,y];
+                    scratchPad[x, y] = universe[x, y];
                 }
             }
+
+
 
             for (int y = 0; y < universe.GetLength(1); y++)  // nested forloop to check every cell in array
             {
@@ -162,6 +164,10 @@ namespace EggenbergerGOL
                     }
                 }
             }
+
+
+
+
 
             for (int y = 0; y < universe.GetLength(1); y++)
             {
@@ -297,7 +303,7 @@ namespace EggenbergerGOL
 
            if (seeNeighbors) //bool that can be toggled by user to see neighbor count
             {
-                Font font = new Font("Arial", 10f); //font and size used to paint neighbor count in cells
+                Font font = new Font("Arial", 0.3f *(ClientSize.Width/universe.GetLength(1))); //font and size used to paint neighbor count in cells
 
                 StringFormat stringN = new StringFormat();
                 stringN.Alignment = StringAlignment.Center; //allows neighbor count to be centered within it's cell
