@@ -84,44 +84,38 @@ namespace EggenbergerGOL
                     if (xOffset == 0 && yOffset == 0) continue; //skips over the center cell (not a neighbor)
                     if (xCheck < 0) xCheck = xLen - 1; //moves to opposite side of univers if home cell is on border
                     if (yCheck < 0) yCheck = yLen - 1;
+
                     if (xCheck > xLen -1) xCheck = 0; //checks if cell is at the last index of the array
                     if (yCheck > yLen -1) yCheck = 0;
 
                     if (universe[xCheck, yCheck] == true) neighbors++; //increments neighborcount if neighbor is 'true'
                 }
             }
-            return neighbors;
+            return neighbors; //number of living neighbors of home-cell
         }
 
         //counts living nighbors in the universe, treating the boundaries as a hard edge
         private int CountNeighborsFinite(int x, int y)
         {
-            int nCount = 0;
-            int xLen = universe.GetLength(0);
-            int yLen = universe.GetLength(1);
-
+            int nCount = 0; //to be returned when neighbors are calculated
+            int xLen = universe.GetLength(0); //determines width of current universe
+            int yLen = universe.GetLength(1); //determines height of current universe
             
-
-            for(int yOffset = -1; yOffset <= 1; yOffset++)
+            for(int yOffset = -1; yOffset <= 1; yOffset++) //checks column to the left of cell, of cell, and to the right of cell 
             {
-                for(int xOffset = -1; xOffset <= 1; xOffset++)
+                for(int xOffset = -1; xOffset <= 1; xOffset++) //checks row above cell, of cell, and below cell
                 {
-                    int xCheck = x + xOffset;
-                    int yCheck = y + yOffset;
-                    if (xCheck < 0) continue;
-                    if (yCheck < 0) continue;
-                    if (xCheck >= xLen) continue;
-                    if (yCheck >= yLen) continue;
-                    if ((xOffset == 0) && (yOffset == 0)) continue;
-
-                    if (universe[xCheck, yCheck] == true) nCount++;
-
+                    int xCheck = x + xOffset; //current x position (-1, 0 , and +1)
+                    int yCheck = y + yOffset; //current  y position (-1, 0, and +1)
+                    if (xCheck < 0) continue; //checks to see if home-cell borders left wall
+                    if (yCheck < 0) continue; //checks to see if home-cell borders bottom wall
+                    if (xCheck >= xLen) continue; //checks to see if home-cell borders right wall
+                    if (yCheck >= yLen) continue; //checks to see if home-cell borders top wall
+                    if ((xOffset == 0) && (yOffset == 0)) continue; //does not include home-cell in the count
+                    if (universe[xCheck, yCheck] == true) nCount++; //increments neighbor count if cell is alive
                 }
             }
-
-
-            return nCount;
-            
+            return nCount; //rerturn total living neighbors            
         }
 
         // Calculate the next generation of cells
@@ -138,25 +132,25 @@ namespace EggenbergerGOL
 
                     if (universe[x, y] == true)
                     {
-                        if (neighbors > 3) scratchPad[x, y] = false;
-                        else if (neighbors < 2) scratchPad[x, y] = false;
-                        else scratchPad[x, y] = true;
+                        if (neighbors > 3) scratchPad[x, y] = false; //kills overpopulated cells form universe
+                        else if (neighbors < 2) scratchPad[x, y] = false; //kills underpopulated cells from universe
+                        else scratchPad[x, y] = true; //cells with 2 or 3 neighbors remain
                     }
-                    else                         //implementation of the 4 rules. store next gen into scratch pad
+                    else                        
                     {
-                        if (neighbors == 3) scratchPad[x, y] = true;
-                        else scratchPad[x, y] = false;
+                        if (neighbors == 3) scratchPad[x, y] = true; //dead cells with exaclty 3 neighbors come to life
+                        else scratchPad[x, y] = false; //dead cells with less than 3 or more than 3 neighbors remain dead
                     }
                 }
             }
 
-            bool[,] temp = universe;
-            universe = scratchPad;
-            scratchPad = temp;
+            bool[,] temp = universe; //creates new array to store universe data in
+            universe = scratchPad;  //universe updated with scratchpad 
+            scratchPad = temp; //scratchpad swapped to previous gen array from universe
 
             // Increment generation count
             generations++;           
-            graphicsPanel1.Invalidate();
+            graphicsPanel1.Invalidate(); //update client window
         }
 
         //updates the bottom strip of the application window with current information about the universe
@@ -337,7 +331,7 @@ namespace EggenbergerGOL
                 Rectangle nRect = Rectangle.Empty;
                 nRect.X = 0;
                 nRect.Y = 0;
-                nRect.Width = hcellWidth;  //create a rectangle the size of the client window
+                nRect.Width = hcellWidth;  //create a rectangle the size of the entire client window for the HUD
                 nRect.Height = hcellHeight;
 
 
@@ -535,42 +529,44 @@ namespace EggenbergerGOL
             Properties.Settings.Default.BackgroundColor = background;
             Properties.Settings.Default.GridColor = gridColor;
             Properties.Settings.Default.Grid10Color = gridXColor;
-            Properties.Settings.Default.CellColor = cellColor;
+            Properties.Settings.Default.CellColor = cellColor;  //records the current state of all of the settings 
             Properties.Settings.Default.GridWidth = uWidth;
             Properties.Settings.Default.GridHeight = uHeight;
             Properties.Settings.Default.Interval = timerInt;
-            Properties.Settings.Default.Save();
+
+            Properties.Settings.Default.Save(); //saves the current state of the settings for next time the appkication is ran
         }
 
         //menu item to reset all settings to default values (color options, universe size, interval time)
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.Reset();
+            Properties.Settings.Default.Reset(); //resets all of the setting values to their default values
 
             //reading in the settings for color options and universe settings from default
             background = Properties.Settings.Default.BackgroundColor;
             gridColor = Properties.Settings.Default.GridColor;
             gridXColor = Properties.Settings.Default.Grid10Color;
-            cellColor = Properties.Settings.Default.CellColor;
+            cellColor = Properties.Settings.Default.CellColor;   //assigning all variables to the default settings
             uWidth = Properties.Settings.Default.GridWidth;
             uHeight = Properties.Settings.Default.GridHeight;
             timerInt = Properties.Settings.Default.Interval;
 
             universe = new bool[uWidth, uHeight]; //rebuilds universe to original size
             scratchPad = new bool[uWidth, uHeight];
-            graphicsPanel1.Invalidate();
+
+            graphicsPanel1.Invalidate(); //updates client window with default array size and colors
         }
 
         //menu item to reload last saved Settings (color options, universe size, interval time)
         private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.Reload();
+            Properties.Settings.Default.Reload(); //reloads the settings to the last saved state (when the application was last closed)
 
             //reading in the settings for color options and universe settings from last saved
             background = Properties.Settings.Default.BackgroundColor;
             gridColor = Properties.Settings.Default.GridColor;
             gridXColor = Properties.Settings.Default.Grid10Color;
-            cellColor = Properties.Settings.Default.CellColor;
+            cellColor = Properties.Settings.Default.CellColor;  //updates all of the member variables to the saved settings values
             uWidth = Properties.Settings.Default.GridWidth;
             uHeight = Properties.Settings.Default.GridHeight;
             timerInt = Properties.Settings.Default.Interval;
@@ -578,15 +574,15 @@ namespace EggenbergerGOL
             universe = new bool[uWidth, uHeight]; //rebuilds universe to last saved size
             scratchPad = new bool[uWidth, uHeight];
 
-            graphicsPanel1.Invalidate();
+            graphicsPanel1.Invalidate(); //updates the client window with the saved array size and color settings
         }
 
         //context or main menu item to toggle on/off seeNeighbors
         private void headsUpDisplayToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(seeHUD == true)
+            if(seeHUD == true) //checks current state of HUD bool
             {
-                seeHUD = false;
+                seeHUD = false; 
                 headsUpDisplay.Checked = false; //toggles bool from current state, and updates both check-boxes accordingly
                 cHUD.Checked = false;
             }
@@ -654,87 +650,85 @@ namespace EggenbergerGOL
         //tool strip 'save' button
         private void saveButton_Click(object sender, EventArgs e)
         {
-            SaveFileDialog dlg = new SaveFileDialog();
+            SaveFileDialog dlg = new SaveFileDialog();  //create dialog window for saving file
             dlg.Filter = "All Files|*.*|Cells|*.cells";
-            dlg.FilterIndex = 2; dlg.DefaultExt = "cells";
+            dlg.FilterIndex = 2; dlg.DefaultExt = "cells"; //defaults file extension to cells format
 
-            if (DialogResult.OK == dlg.ShowDialog())
+            if (DialogResult.OK == dlg.ShowDialog()) //if user clicks 'ok', file writing begins
             {
-                StreamWriter writer = new StreamWriter(dlg.FileName);
+                StreamWriter writer = new StreamWriter(dlg.FileName); //file writer instantiated
 
-                for (int y = 0; y < universe.GetLength(1); y++)
+                writer.WriteLine("!Game of Life v1.02 file."); //comment written to file header
+
+                for (int y = 0; y < universe.GetLength(1); y++)  //nested for loop to go through each index in universe
                 {
-                    string currentLine = string.Empty;
-                    for (int x = 0; x < universe.GetLength(0); x++)
+                    string currentLine = string.Empty;  //creates a string that will become line in file
+                    for (int x = 0; x < universe.GetLength(0); x++) 
                     {
                         if (universe[x, y] == true)
                         {
                             currentLine = currentLine + "O";
                         }
-                        else
+                        else                                     //writes living cells as 'O' in the string, dead cells as '.'
                         {
                             currentLine = currentLine + ".";
                         }
                     }
-                    writer.WriteLine(currentLine);
+                    writer.WriteLine(currentLine); //adds the string as a new line in the file
                 }
-                writer.Close();
+                writer.Close(); //closes the file
             }
         }
 
         //tool strip 'open' button
         private void openButton_Click(object sender, EventArgs e)
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = "All Files|*.*|Cells|*.cells";
+            OpenFileDialog dlg = new OpenFileDialog(); //declare file dialog window
+            dlg.Filter = "All Files|*.*|Cells|*.cells"; 
             dlg.FilterIndex = 2;
 
 
-            if(DialogResult.OK == dlg.ShowDialog())
+            if(DialogResult.OK == dlg.ShowDialog()) //if user clicks 'ok' on file dialog, file is read in
             {
-                StreamReader read = new StreamReader(dlg.FileName);
-                int xLen = 0;
-                int yLen = 0;
+                StreamReader read = new StreamReader(dlg.FileName); //file reader
+                int xLen = 0; //variable to dertermine universe width in saved file
+                int yLen = 0; //variable to determine universe height in saved file
 
-                while (!read.EndOfStream)
+                while (!read.EndOfStream) //loop continues to read line by line until the end of the file
                 {
-                    string row = read.ReadLine();
-                    if (row[0] == 'O'||row[0] == '.')
+                    string row = read.ReadLine(); //creates a string from the current line on the file
+                    if (row[0] == 'O'||row[0] == '.') //lines that start with 'O' or  '.' indicate it is part of the array to be read in
                     {
-                        yLen++;
-                        xLen = row.Length;
-                    }
-                    
+                        yLen++;                //increments the yLen to determine the universe height
+                        xLen = row.Length;     //xLen the entire char count in the line, universe width
+                    }                    
                 }
-
                 
-
-                uWidth = xLen;
-                uHeight = yLen;
+                uWidth = xLen; //sets uWidth to xLen to mirror the array width in the file
+                uHeight = yLen; //sets uHeight to yLen to mirror the array height in the file
                 universe = new bool[uWidth, uHeight]; //creates new universe array with updated value
                 scratchPad = new bool[uWidth, uHeight]; //creatsnew scratch arraty with updated value
 
-                read.BaseStream.Seek(0, SeekOrigin.Begin);
-                int y = 0;
-                while (!read.EndOfStream)
-                {
-                    
-                    string row = read.ReadLine();
-                    if (row[0] == 'O'||row[0] == '.')
+                read.BaseStream.Seek(0, SeekOrigin.Begin); //reverts file back to the beginning
+                int y = 0; //new variable for the array index
+
+                while (!read.EndOfStream)  //Loops thorugh file 1 line at a time, ends at the last line in file
+                {                    
+                    string row = read.ReadLine();  //creates a string with the contents of the current line
+                    if (row[0] == 'O'||row[0] == '.') //recognizes string as array data if it begins with 'O' or '.'
                     {
-                        for(int x = 0; x < row.Length; x++)
+                        for(int x = 0; x < row.Length; x++) //for loop to go through each char in the string
                         {
-                            if (row[x] == 'O') universe[x, y] = true;
-                            else universe[x, y] = false;
+                            if (row[x] == 'O') universe[x, y] = true; //sets universe index to true if char is 'O'
+                            else universe[x, y] = false; //sets index to false if char is '.'
                         }
-                        y++;
-                    }
-                    
+                        y++; //increments y index for next string
+                    }                   
                 }
-                read.Close();
+                read.Close();  //close file
             }
             
-            graphicsPanel1.Invalidate();
+            graphicsPanel1.Invalidate(); //updatw the client window with newly read file
         }
     }
 }
