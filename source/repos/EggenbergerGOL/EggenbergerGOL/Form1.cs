@@ -43,6 +43,7 @@ namespace EggenbergerGOL
         // Generation count
         int generations = 0;
 
+        //constructor for the class, initiates all member fields
         public Form1()
         {
             //reading in the settings for color options
@@ -66,6 +67,7 @@ namespace EggenbergerGOL
 
         }
 
+        //counts the neighboring living cells, treating the boundaries as though the continue on opposite side
         private int CountNeighborsToroidal(int x, int y)
         {
             int neighbors = 0; //variable that is returned once method is complete
@@ -91,6 +93,7 @@ namespace EggenbergerGOL
             return neighbors;
         }
 
+        //counts living nighbors in the universe, treating the boundaries as a hard edge
         private int CountNeighborsFinite(int x, int y)
         {
             int nCount = 0;
@@ -124,15 +127,6 @@ namespace EggenbergerGOL
         // Calculate the next generation of cells
         private void NextGeneration()
         {
-            /*for (int y = 0; y < universe.GetLength(1); y++)  //cloning universe array into scratchpad
-            {
-                for (int x = 0; x < universe.GetLength(0); x++)
-                {
-                    scratchPad[x, y] = universe[x, y];
-                }
-            }*/
-            
-
 
             for (int y = 0; y < universe.GetLength(1); y++)  // nested forloop to check every cell in array
             {
@@ -160,31 +154,12 @@ namespace EggenbergerGOL
             universe = scratchPad;
             scratchPad = temp;
 
-
-            /* bool[,] temp2 = scratchPad;
-             scratchPad = universe;
-             universe = temp2;*/
-            //scratchPad = universe;
-
-
-
-
-
-            /*for (int y = 0; y < universe.GetLength(1); y++)
-            {
-                for (int x = 0; x < universe.GetLength(0); x++)  //copying next generation into universe
-                {
-                    universe[x, y] = scratchPad[x, y];
-                }
-            }*/
-
             // Increment generation count
-            generations++;
-
-            
+            generations++;           
             graphicsPanel1.Invalidate();
         }
 
+        //updates the bottom strip of the application window with current information about the universe
         private void StatusStripUpdate()
         {
             int alive = CellCount(); //to display living cells in bottom status strip
@@ -193,6 +168,7 @@ namespace EggenbergerGOL
             toolStripStatusLabelGenerations.Text = "Generations: " + generations.ToString() + "    Interval: " + timerInt.ToString() + "ms    Living Cells: " + alive.ToString() + "    Seed: " + seedRand.ToString();
         }
 
+        //returns an int of the current number of living cells within the univers
         private int CellCount()
         {
             int c = 0; //int to be returned with living cell count
@@ -208,9 +184,9 @@ namespace EggenbergerGOL
             return c; //returns total living cells
         }
 
+        //allows for the array to be randomly re-assigned. can be used with custom seed, current seed, or seed determined by current time
         private void Randomize()
-        {
-            
+        {           
             Random rUniverse = new Random(seedRand); //allows variable to seed random object
 
             for(int y = 0; y< universe.GetLength(1); y++)
@@ -229,6 +205,7 @@ namespace EggenbergerGOL
             NextGeneration(); //calls next gen every interval           
         }
 
+        //renders the realtime graphics into the client window
         private void graphicsPanel1_Paint(object sender, PaintEventArgs e)
         {
 
@@ -374,6 +351,7 @@ namespace EggenbergerGOL
             gridPenX.Dispose();
         }
 
+        //allows user to manually turn on/off celles by clicking inside the client window
         private void graphicsPanel1_MouseClick(object sender, MouseEventArgs e)
         {
             // If the left mouse button was clicked
@@ -397,117 +375,114 @@ namespace EggenbergerGOL
             }
         }
 
+        //exit option in menu. Closes the application
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close(); //closes the main window
         }
 
+        //tool strip button to play GOL
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             timer.Enabled = true; //play button toggles the timer on
         }
 
+        //toolstrip button to pause GOL
         private void toolStrip1_Click(object sender, EventArgs e)
         {
             timer.Enabled = false; //pause button toggles timer off
         }
 
+        //tool strip button that advances universe one step into the future
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
             NextGeneration(); //next button calls Nextgeneraton once, to see the next step in GOL
         }
 
+        //menu item to clear the universe and set all cells to dead
         private void newToolStripButton_Click(object sender, EventArgs e)
         {
             for (int y = 0; y < universe.GetLength(1); y++)
             {
-                for (int x = 0; x < universe.GetLength(0); x++)
+                for (int x = 0; x < universe.GetLength(0); x++) //sets all indexes in the universe array yo false(dead)
                 {
                     universe[x, y] = false;
                 }
             }
-            generations = 0;
+            generations = 0; //resets geneeration count to 0
             graphicsPanel1.Invalidate();
         }
 
+        //menu itme to toggle on/off neoghbor count visibilty
         private void neighborCountToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(seeNeighbors == true)
+            if(seeNeighbors == true) //checks to see if neighborcount is currently 'on'
             {
                 seeNeighbors = false;
-                veiwNeighbors.Checked = false; //checks bool and toggles it. updates check boxes in menu and context menu
+                veiwNeighbors.Checked = false; //toggles 'off' neighbor count. updates check boxes in menu and context menu
                 cNeighbors.Checked = false;
             }
             else
             {
                 seeNeighbors = true;
-                veiwNeighbors.Checked = true; //toggles bool to turn on neighbors, updates check boxes in both menus
+                veiwNeighbors.Checked = true; //toggles bool to turn 'on' neighbors, updates check boxes in both menus
                 cNeighbors.Checked = true;
             }
             
             graphicsPanel1.Invalidate();
         }
 
-        private void neighborCountToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            seeNeighbors = true;
-        }
-
-    
-
-        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
-        {
-
-        }
-
+        //context menu item to open color dialog to edit color of living cells
         private void cellColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ColorDialog dlg = new ColorDialog();
-            dlg.Color = cellColor;
+            ColorDialog dlg = new ColorDialog(); //new dialog for color options
+            dlg.Color = cellColor; //sets focus to current color of cells
             if(DialogResult.OK == dlg.ShowDialog())
             {
-                cellColor = dlg.Color;
+                cellColor = dlg.Color; //assigns selected color to cells if user clicks 'ok'
             }
             graphicsPanel1.Invalidate();
 
         }
 
+        //context menu itme to open color dialog to edit color of standard grid
         private void gridColorToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            ColorDialog dlg = new ColorDialog();
-            dlg.Color = gridColor;
+            ColorDialog dlg = new ColorDialog(); //new dialog for color options
+            dlg.Color = gridColor; //sets focus to current color of grid
             if(DialogResult.OK == dlg.ShowDialog())
             {
-                gridColor = dlg.Color;
+                gridColor = dlg.Color; //assigns selected color to grid if user clicks 'ok'
             }
             graphicsPanel1.Invalidate();
         }
 
+        //context menu to open color dialog to edit color of grid x10
         private void gridX10ColorToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            ColorDialog dlg = new ColorDialog();
-            dlg.Color = gridXColor;
+            ColorDialog dlg = new ColorDialog(); //new dialog for color options
+            dlg.Color = gridXColor;//sets focus on dialog to current grid color
             if(DialogResult.OK == dlg.ShowDialog())
             {
-                gridXColor = dlg.Color;
+                gridXColor = dlg.Color; //assigns selected color to grid x10 if user clicks 'ok'
             }
             graphicsPanel1.Invalidate();
         }
-
       
-
+        //context menu item to open color dialog box to edit background color
         private void backgroundColorToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            ColorDialog dlg = new ColorDialog();
-            dlg.Color = background;
+            ColorDialog dlg = new ColorDialog(); //new dialog for color options
+            dlg.Color = background; //sets focus to current background colo in dialog
             if(DialogResult.OK == dlg.ShowDialog())
             {
-                background = dlg.Color;
+                background = dlg.Color;  //assigns selected color in dialog to background if user clicks 'ok'
                 
             }
             graphicsPanel1.Invalidate();
         }
 
+        //menu item to open modal window for universe options (universe size, and timing intervals)
         private void optionsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             UniverseModal dlg = new UniverseModal();
@@ -527,7 +502,7 @@ namespace EggenbergerGOL
                     scratchPad = new bool[uWidth, uHeight]; //creatsnew scratch arraty with updated value
                 }
                 
-                timerInt = dlg.Time;
+                timerInt = dlg.Time; //update timer variable, then assign it to timer.
                 timer.Interval = timerInt;
 
                 graphicsPanel1.Invalidate();         
@@ -535,7 +510,7 @@ namespace EggenbergerGOL
 
         }
 
-
+        //menu item that allows visibilty of grid to be toggled on/off
         private void gridToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (seeGrid == true)
@@ -554,6 +529,7 @@ namespace EggenbergerGOL
             graphicsPanel1.Invalidate();
         }
 
+        //saves settings when application is closing (color options, universe size, interval time)
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             Properties.Settings.Default.BackgroundColor = background;
@@ -566,6 +542,7 @@ namespace EggenbergerGOL
             Properties.Settings.Default.Save();
         }
 
+        //menu item to reset all settings to default values (color options, universe size, interval time)
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.Reset();
@@ -584,6 +561,7 @@ namespace EggenbergerGOL
             graphicsPanel1.Invalidate();
         }
 
+        //menu item to reload last saved Settings (color options, universe size, interval time)
         private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.Reload();
@@ -603,6 +581,7 @@ namespace EggenbergerGOL
             graphicsPanel1.Invalidate();
         }
 
+        //context or main menu item to toggle on/off seeNeighbors
         private void headsUpDisplayToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(seeHUD == true)
@@ -618,16 +597,18 @@ namespace EggenbergerGOL
                 cHUD.Checked = true;
             }
 
-            graphicsPanel1.Invalidate();
+            graphicsPanel1.Invalidate(); //updates client window
 
         }
 
+        //menu item to randomize from current seed
         private void fromCurrentSeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Randomize(); //random new array with current seed
-            graphicsPanel1.Invalidate();
+            graphicsPanel1.Invalidate(); //update client window
         }
 
+        //opens modal window for setting custom random seed
         private void fromSeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SeedModal dlg = new SeedModal(); //displays menu for Randomizing 
@@ -641,23 +622,27 @@ namespace EggenbergerGOL
             }
         }
 
+        //menu item for turning on/off finite universe mode
         private void finiteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            toroidal = false;
-            if (finiteM.Checked) toroidalM.Checked = false;
-            graphicsPanel1.Invalidate();
+            toroidal = false; //toggles off toroidal, sets ti 'finite' mode
+            if (finiteM.Checked) toroidalM.Checked = false; //ensures both 'toroidal' and 'finite' check boxes are not both checked.
+            graphicsPanel1.Invalidate(); //update client window
         }
 
+        //menu item for turning on/off turoidal mode
         private void toroidalM_Click(object sender, EventArgs e)
         {
-            if (toroidalM.Checked)
+            if (toroidalM.Checked) //verifies if box for toroidal is checked
             {
-                toroidal = true;
-                finiteM.Checked = false;
+                toroidal = true; //sets toroidal bool to true if box is checked
+                finiteM.Checked = false; //unchecks finite menu check box
             }
-            graphicsPanel1.Invalidate();
+            graphicsPanel1.Invalidate(); //update client window
+
         }
 
+        //menu item to set current time as random seed
         private void fromTimeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //generates a number from current time ex.(3:45:15pm would become 154515) and assigns it to seedRand
@@ -666,6 +651,7 @@ namespace EggenbergerGOL
             graphicsPanel1.Invalidate();
         }
 
+        //tool strip 'save' button
         private void saveButton_Click(object sender, EventArgs e)
         {
             SaveFileDialog dlg = new SaveFileDialog();
@@ -696,6 +682,7 @@ namespace EggenbergerGOL
             }
         }
 
+        //tool strip 'open' button
         private void openButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();

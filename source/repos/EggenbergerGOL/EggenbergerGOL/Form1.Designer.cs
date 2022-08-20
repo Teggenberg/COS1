@@ -216,7 +216,7 @@ namespace EggenbergerGOL
             this.veiwNeighbors.Name = "veiwNeighbors";
             this.veiwNeighbors.Size = new System.Drawing.Size(166, 22);
             this.veiwNeighbors.Text = "neighbor count";
-            this.veiwNeighbors.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.neighborCountToolStripMenuItem_DropDownItemClicked);
+           
             this.veiwNeighbors.Click += new System.EventHandler(this.neighborCountToolStripMenuItem_Click);
             // 
             // showGrid
@@ -471,7 +471,7 @@ namespace EggenbergerGOL
             this.modalToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(149, 48);
-            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            
             // 
             // colorToolStripMenuItem
             // 
