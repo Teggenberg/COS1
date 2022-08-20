@@ -483,7 +483,7 @@ namespace EggenbergerGOL
             this.colorToolStripMenuItem.Name = "colorToolStripMenuItem";
             this.colorToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.colorToolStripMenuItem.Text = "Color Options";
-            this.colorToolStripMenuItem.Click += new System.EventHandler(this.colorToolStripMenuItem_Click_1);
+            
             // 
             // cellColorToolStripMenuItem
             // 
@@ -522,7 +522,7 @@ namespace EggenbergerGOL
             this.modalToolStripMenuItem.Name = "modalToolStripMenuItem";
             this.modalToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.modalToolStripMenuItem.Text = "View";
-            this.modalToolStripMenuItem.Click += new System.EventHandler(this.modalToolStripMenuItem_Click);
+
             // 
             // cGrid
             // 

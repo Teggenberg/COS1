@@ -16,7 +16,7 @@ namespace EggenbergerGOL
     public partial class Form1 : Form
     {
         int uWidth = 30; //variable to manipulte universe width
-        int uHeight = 30; //varialble to manipulate universe height
+        int uHeight; //varialble to manipulate universe height
         int timerInt = 100; //variable to control timer intervals
         int seedRand = 52;
 
@@ -54,7 +54,7 @@ namespace EggenbergerGOL
             uWidth = Properties.Settings.Default.GridWidth;
             uHeight = Properties.Settings.Default.GridHeight;
             timerInt = Properties.Settings.Default.Interval;
-
+            
             universe = new bool[uWidth, uHeight]; //declare array size in constructor
             scratchPad = new bool[uWidth, uHeight]; 
             InitializeComponent();
@@ -64,15 +64,6 @@ namespace EggenbergerGOL
             timer.Tick += Timer_Tick;
             timer.Enabled = false; // start timer running
 
-            /*//reading in the settings for color options
-            background = Properties.Settings.Default.BackgroundColor;
-            gridColor = Properties.Settings.Default.GridColor;
-            gridXColor = Properties.Settings.Default.Grid10Color;
-            cellColor = Properties.Settings.Default.CellColor;
-            //reading settings for geid dimensions and time interval
-            uWidth = Properties.Settings.Default.GridWidth;
-            uHeight = Properties.Settings.Default.GridHeight;
-            timerInt = Properties.Settings.Default.Interval;*/
         }
 
         private int CountNeighborsToroidal(int x, int y)
@@ -118,8 +109,6 @@ namespace EggenbergerGOL
                     if (yCheck < 0) continue;
                     if (xCheck >= xLen) continue;
                     if (yCheck >= yLen) continue;
-                    //if (xCheck != x && xCheck != xLen) xCheck += xOffset;
-                    //if (yCheck != 0 && yCheck != yLen) yCheck += yOffset;
                     if ((xOffset == 0) && (yOffset == 0)) continue;
 
                     if (universe[xCheck, yCheck] == true) nCount++;
@@ -135,14 +124,14 @@ namespace EggenbergerGOL
         // Calculate the next generation of cells
         private void NextGeneration()
         {
-            for (int y = 0; y < universe.GetLength(1); y++)  //cloning universe array into scratchpad
+            /*for (int y = 0; y < universe.GetLength(1); y++)  //cloning universe array into scratchpad
             {
                 for (int x = 0; x < universe.GetLength(0); x++)
                 {
                     scratchPad[x, y] = universe[x, y];
                 }
-            }
-
+            }*/
+            
 
 
             for (int y = 0; y < universe.GetLength(1); y++)  // nested forloop to check every cell in array
@@ -151,31 +140,43 @@ namespace EggenbergerGOL
                 {
                     int neighbors;
                     if (toroidal) neighbors = CountNeighborsToroidal(x, y); //toggle for choice of toroidal or finite universe
-                    else neighbors = CountNeighborsFinite(x, y); 
-                    
-                    if (universe[x,y] == true)
+                    else neighbors = CountNeighborsFinite(x, y);
+
+                    if (universe[x, y] == true)
                     {
-                        if(neighbors > 3) scratchPad[x, y] = false;  
-                        if(neighbors < 2) scratchPad[x, y] = false;
+                        if (neighbors > 3) scratchPad[x, y] = false;
+                        else if (neighbors < 2) scratchPad[x, y] = false;
+                        else scratchPad[x, y] = true;
                     }
-                    if (universe[x,y] == false)                         //implementation of the 4 rules. store next gen into scratch pad
+                    else                         //implementation of the 4 rules. store next gen into scratch pad
                     {
                         if (neighbors == 3) scratchPad[x, y] = true;
+                        else scratchPad[x, y] = false;
                     }
                 }
             }
 
+            bool[,] temp = universe;
+            universe = scratchPad;
+            scratchPad = temp;
+
+
+            /* bool[,] temp2 = scratchPad;
+             scratchPad = universe;
+             universe = temp2;*/
+            //scratchPad = universe;
 
 
 
 
-            for (int y = 0; y < universe.GetLength(1); y++)
+
+            /*for (int y = 0; y < universe.GetLength(1); y++)
             {
                 for (int x = 0; x < universe.GetLength(0); x++)  //copying next generation into universe
                 {
                     universe[x, y] = scratchPad[x, y];
                 }
-            }
+            }*/
 
             // Increment generation count
             generations++;
@@ -452,10 +453,7 @@ namespace EggenbergerGOL
             seeNeighbors = true;
         }
 
-        private void colorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
+    
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
@@ -496,10 +494,7 @@ namespace EggenbergerGOL
             graphicsPanel1.Invalidate();
         }
 
-        private void colorToolStripMenuItem_Click_1(object sender, EventArgs e)
-        {
-
-        }
+      
 
         private void backgroundColorToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -540,10 +535,6 @@ namespace EggenbergerGOL
 
         }
 
-        private void modalToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void gridToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -579,7 +570,7 @@ namespace EggenbergerGOL
         {
             Properties.Settings.Default.Reset();
 
-            //reading in the settings for color options
+            //reading in the settings for color options and universe settings from default
             background = Properties.Settings.Default.BackgroundColor;
             gridColor = Properties.Settings.Default.GridColor;
             gridXColor = Properties.Settings.Default.Grid10Color;
@@ -588,6 +579,8 @@ namespace EggenbergerGOL
             uHeight = Properties.Settings.Default.GridHeight;
             timerInt = Properties.Settings.Default.Interval;
 
+            universe = new bool[uWidth, uHeight]; //rebuilds universe to original size
+            scratchPad = new bool[uWidth, uHeight];
             graphicsPanel1.Invalidate();
         }
 
@@ -595,11 +588,17 @@ namespace EggenbergerGOL
         {
             Properties.Settings.Default.Reload();
 
-            //reading in the settings for color options
+            //reading in the settings for color options and universe settings from last saved
             background = Properties.Settings.Default.BackgroundColor;
             gridColor = Properties.Settings.Default.GridColor;
             gridXColor = Properties.Settings.Default.Grid10Color;
             cellColor = Properties.Settings.Default.CellColor;
+            uWidth = Properties.Settings.Default.GridWidth;
+            uHeight = Properties.Settings.Default.GridHeight;
+            timerInt = Properties.Settings.Default.Interval;
+
+            universe = new bool[uWidth, uHeight]; //rebuilds universe to last saved size
+            scratchPad = new bool[uWidth, uHeight];
 
             graphicsPanel1.Invalidate();
         }
