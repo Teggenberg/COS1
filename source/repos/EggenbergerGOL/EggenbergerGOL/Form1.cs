@@ -15,10 +15,10 @@ namespace EggenbergerGOL
 
     public partial class Form1 : Form
     {
-        int uWidth = 30; //variable to manipulte universe width
+        int uWidth; //variable to manipulte universe width
         int uHeight; //varialble to manipulate universe height
-        int timerInt = 100; //variable to control timer intervals
-        int seedRand = 52;
+        int timerInt; //variable to control timer intervals
+        int seedRand = 52; //variable to allow for seeding of the random method
 
         // The universe array
         bool[,] universe; //array szeundelcared to allow manipulation with uWidth and uHeight
@@ -28,8 +28,8 @@ namespace EggenbergerGOL
 
         bool seeNeighbors = true; //bool to allow for toggle of visibilty neighbor count
         bool seeGrid = true;  //bool to allow for visibility of grid
-        bool seeHUD = true;
-        bool toroidal = true;
+        bool seeHUD = true; //bool to toggle HUD on and off
+        bool toroidal = true; //bool to switch between Toroidal and finite
 
         // Drawing colors
         Color gridColor = Color.Black; //standard grid
@@ -43,7 +43,7 @@ namespace EggenbergerGOL
         // Generation count
         int generations = 0;
 
-        //constructor for the class, initiates all member fields
+        //constructor for the class, initializes all member fields
         public Form1()
         {
             //reading in the settings for color options
@@ -275,7 +275,7 @@ namespace EggenbergerGOL
 
            if (seeNeighbors) //bool that can be toggled by user to see neighbor count
             {
-                Font font = new Font("Arial", 0.3f *(ClientSize.Width/universe.GetLength(1))); //font and size used to paint neighbor count in cells
+                Font font = new Font("Arial", 0.5f *(ClientSize.Width/universe.GetLength(1))); //font and size used to paint neighbor count in cells
 
                 StringFormat stringN = new StringFormat();
                 stringN.Alignment = StringAlignment.Center; //allows neighbor count to be centered within it's cell
@@ -317,13 +317,13 @@ namespace EggenbergerGOL
                 Font font = new Font("Arial", 16f); //declare font and point size for neighbor count
 
                 string boundary;
-                if (toroidal) boundary = " Toroidal";
+                if (toroidal) boundary = " Toroidal"; //determines whether to display Toroidal or Finite in the HUD
                 else boundary = " Finite";
-
-                StringFormat stringN = new StringFormat();
+                
+                StringFormat stringN = new StringFormat(); //creating the string that holds the data for the HUD
                 stringN.Alignment = StringAlignment.Near;  //code that will allow for centering neighbor count within cell
                 stringN.LineAlignment = StringAlignment.Far;
-                int cells = CellCount();
+                int cells = CellCount(); //calculates the number of living cells to display on the HUD
                 string hudG = "Generations: " + generations + "\nCell Count: " + cells + "\nBoundary Type:" + boundary + "\nUniverse Dimensions: "  + uWidth + "x" + uHeight ; //the text contained within the HUD
 
 

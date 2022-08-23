@@ -125,6 +125,7 @@ namespace EggenbergerGOL
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newToolStripMenuItem.Text = "&New";
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripButton_Click);
             // 
             // openToolStripMenuItem
             // 
@@ -183,11 +184,12 @@ namespace EggenbergerGOL
             // 
             // veiwNeighbors
             // 
+            this.veiwNeighbors.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.veiwNeighbors.Checked = true;
             this.veiwNeighbors.CheckOnClick = true;
             this.veiwNeighbors.CheckState = System.Windows.Forms.CheckState.Checked;
             this.veiwNeighbors.Name = "veiwNeighbors";
-            this.veiwNeighbors.Size = new System.Drawing.Size(166, 22);
+            this.veiwNeighbors.Size = new System.Drawing.Size(180, 22);
             this.veiwNeighbors.Text = "neighbor count";
             this.veiwNeighbors.Click += new System.EventHandler(this.neighborCountToolStripMenuItem_Click);
             // 
@@ -197,7 +199,7 @@ namespace EggenbergerGOL
             this.showGrid.CheckOnClick = true;
             this.showGrid.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showGrid.Name = "showGrid";
-            this.showGrid.Size = new System.Drawing.Size(166, 22);
+            this.showGrid.Size = new System.Drawing.Size(180, 22);
             this.showGrid.Text = "Grid";
             this.showGrid.Click += new System.EventHandler(this.gridToolStripMenuItem_Click);
             // 
@@ -207,20 +209,20 @@ namespace EggenbergerGOL
             this.headsUpDisplay.CheckOnClick = true;
             this.headsUpDisplay.CheckState = System.Windows.Forms.CheckState.Checked;
             this.headsUpDisplay.Name = "headsUpDisplay";
-            this.headsUpDisplay.Size = new System.Drawing.Size(166, 22);
+            this.headsUpDisplay.Size = new System.Drawing.Size(180, 22);
             this.headsUpDisplay.Text = "Heads Up Display";
             this.headsUpDisplay.Click += new System.EventHandler(this.headsUpDisplayToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(163, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(177, 6);
             // 
             // finiteM
             // 
             this.finiteM.CheckOnClick = true;
             this.finiteM.Name = "finiteM";
-            this.finiteM.Size = new System.Drawing.Size(166, 22);
+            this.finiteM.Size = new System.Drawing.Size(180, 22);
             this.finiteM.Text = "Finite";
             this.finiteM.Click += new System.EventHandler(this.finiteToolStripMenuItem_Click);
             // 
@@ -230,7 +232,7 @@ namespace EggenbergerGOL
             this.toroidalM.CheckOnClick = true;
             this.toroidalM.CheckState = System.Windows.Forms.CheckState.Checked;
             this.toroidalM.Name = "toroidalM";
-            this.toroidalM.Size = new System.Drawing.Size(166, 22);
+            this.toroidalM.Size = new System.Drawing.Size(180, 22);
             this.toroidalM.Text = "Toroidal";
             this.toroidalM.Click += new System.EventHandler(this.toroidalM_Click);
             // 
