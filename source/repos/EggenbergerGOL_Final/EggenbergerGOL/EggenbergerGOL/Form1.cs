@@ -35,6 +35,7 @@ namespace EggenbergerGOL
         bool snakeUp = false;
         bool snakeDown = false;
         bool snakeLeft = false;
+        bool gameOver = false;
 
         string hudG;
 
@@ -120,19 +121,35 @@ namespace EggenbergerGOL
             }
         }
 
-        private int SnakeAge()
+        private void SnakeNew()
         {
-            int snakeLength = 0;
-
-            for(int y = 0; y < snake.GetLength(1); y++)
+            gameOver = false;
+            snake = new Snake[uWidth, uHeight];
+            for (int y = 0; y < snake.GetLength(1); y++)
             {
-                for(int x = 0; x < snake.GetLength(0); x++)
+                for (int x = 0; x < snake.GetLength(0); x++)
                 {
-                    if (snake[x, y].living == true) snakeLength++;
+                    snake[x, y] = new Snake();
+
+
                 }
             }
-
-            return snakeLength;
+            snakeHud = true;
+            timer.Enabled = false;
+            snakeRight = true;
+            timerInt = 200;
+            timer.Interval = timerInt;
+            toroidal = false;
+            playSnake = true;
+            snakeHead = 3;
+            snake[5, 4].living = true;
+            snake[5, 4].age = 1;
+            snake[6, 4].living = true;
+            snake[6, 4].age = 2;
+            snake[7, 4].living = true;
+            snake[7, 4].age = 3;
+            AddFood();
+            seeNeighbors = false;
         }
 
 
@@ -237,14 +254,22 @@ namespace EggenbergerGOL
                         {
                             snake[(x + 1), y].living = true;
                             if (snake[x + 1, y].age < 2) snake[(x + 1), y].age = snakeHead + 1;
-                            else { timer.Enabled = false; return; }
+                            else 
+                            {
+                                gameOver = true; 
+                                return; 
+                            }
                             
                         }
                         else
                         {
                             snake[0, y].living = true;
                             if (snake[0, y].age < 2) snake[0, y].age = snakeHead + 0;
-                            else { timer.Enabled = false; return; }
+                            else 
+                            {
+                                gameOver = true;
+                                return; 
+                            }
                         }
                     }
                     if (snake[x, y].edible == true && snake[x, y].living == true)
@@ -285,14 +310,21 @@ namespace EggenbergerGOL
                         {
                             snake[(x - 1), y].living = true;
                             if (snake[(x - 1), y].age < 2) snake[(x - 1), y].age = snakeHead + 0;
-                            else { timer.Enabled = false; return; }
+                            else 
+                            {
+                                gameOver = true;
+                                return; 
+                            }
                         }
                         else
                         {
-                            snake[rightColumn , y].living = true;
-                            //
+                            snake[rightColumn , y].living = true;                            
                             if (snake[rightColumn, y].age < 2) snake[rightColumn , y].age = snakeHead + 1;
-                            else { timer.Enabled = false; return; }
+                            else 
+                            {
+                                gameOver = true;
+                                return; 
+                            }
                             
                         }
                     }
@@ -320,10 +352,35 @@ namespace EggenbergerGOL
             graphicsPanel1.Invalidate(); //update client window
         }
 
-        private void SnakeNextDown()
+        private void Gameover()
         {
-            
-            //int bottomRow = snake.GetLength(1) - 1;
+            if(snakeHead == 3)
+            {
+                SnakeNew();
+                graphicsPanel1.Invalidate();
+                return;
+            }
+            //timer.Enabled = true;
+
+            for(int y = 0; y < snake.GetLength(0); y++)
+            {
+                for(int x = 0; x < snake.GetLength(1); x++)
+                {
+                    if (snake[x, y].living == true)
+                    {
+                        if(snake[x,y].age > 0) snake[x, y].age--;
+                        if (snake[x, y].age == 0) snake[x, y].living = false;
+                        
+                    }
+                }
+            }
+
+            snakeHead--;
+            graphicsPanel1.Invalidate();
+        }
+
+        private void SnakeNextDown()
+        {            
 
             for (int y = 0; y < snake.GetLength(1); y++)
             {
@@ -335,13 +392,21 @@ namespace EggenbergerGOL
                         {
                             snake[x, y + 1].living = true;
                             if (snake[x, y + 1].age < 2) snake[x, y + 1].age = snakeHead + 1;
-                            else { timer.Enabled = false; return; }
+                            else 
+                            {
+                                gameOver = true;
+                                return; 
+                            }
                         }
                         else
                         {
                             snake[x, 0].living = true;
                             if (snake[x, 0].age < 2) snake[x, 0].age = snakeHead + 0;
-                            else { timer.Enabled = false; return; }
+                            else 
+                            {
+                                gameOver = true;
+                                return; 
+                            }
                         }
                     }
                     if (snake[x, y].edible == true && snake[x, y].living == true)
@@ -382,13 +447,21 @@ namespace EggenbergerGOL
                         {
                             snake[x, y - 1].living = true;
                             if (snake[x, y - 1].age < 2) snake[x, y - 1].age = snakeHead + 0;
-                            else { timer.Enabled = false; return; }
+                            else 
+                            {
+                                gameOver = true;
+                                return; 
+                            }
                         }
                         else
                         {
                             snake[x, bottomRow].living = true;
                             if (snake[x, bottomRow].age < 2) snake[x, bottomRow].age = snakeHead + 1;
-                            else { timer.Enabled = false; return; }
+                            else 
+                            {
+                                gameOver = true;
+                                return; 
+                            }
                         }
                     }
                     if (snake[x, y].edible == true && snake[x, y].living == true)
@@ -459,10 +532,20 @@ namespace EggenbergerGOL
         {
             if (playSnake)
             {
-                if (snakeRight) SnakeNextRight();
+                if (gameOver) Gameover();
+                else
+                {
+                    if (snakeRight) SnakeNextRight();
+                    else if (snakeDown) SnakeNextDown();
+                    else if (snakeUp) SnakeNextUp();
+                    else if (snakeLeft) SnakeNextLeft();
+
+                }
+                /*if (snakeRight) SnakeNextRight();
                 else if (snakeDown) SnakeNextDown();
                 else if (snakeUp) SnakeNextUp();
-                else SnakeNextLeft();
+                else if (snakeLeft) SnakeNextLeft();
+                else if (gameOver) Gameover();*/
             }
             else NextGeneration(); //calls next gen every interval           
         }
@@ -641,7 +724,7 @@ namespace EggenbergerGOL
             // If the left mouse button was clicked
             if (e.Button == MouseButtons.Left)
             {
-                int snakeCells = SnakeAge() + 1;
+                int snakeCells = snakeHead;
                 // Calculate the width and height of each cell in pixels
                 int cellWidth = graphicsPanel1.ClientSize.Width / universe.GetLength(0);
                 int cellHeight = graphicsPanel1.ClientSize.Height / universe.GetLength(1);
@@ -655,7 +738,7 @@ namespace EggenbergerGOL
                 if (playSnake)
                 {
                     snake[x, y].living = true;
-                    snake[x, y].age = SnakeAge() + 1;
+                    snake[x, y].age = snakeHead + 1;
                 }
                 // Toggle the cell's state
                 else universe[x, y] = !universe[x, y];
@@ -1065,7 +1148,8 @@ namespace EggenbergerGOL
             }*/
             if (playSnake == false)
             {
-                snake = new Snake[uWidth, uHeight];
+                SnakeNew();
+                /*snake = new Snake[uWidth, uHeight];
                 for (int y = 0; y < snake.GetLength(1); y++)
                 {
                     for (int x = 0; x < snake.GetLength(0); x++)
@@ -1089,7 +1173,7 @@ namespace EggenbergerGOL
                 snake[7, 4].living = true;
                 snake[7, 4].age = 3;
                 AddFood();
-                seeNeighbors = false;
+                seeNeighbors = false;*/
                 
             }
             else
@@ -1121,7 +1205,7 @@ namespace EggenbergerGOL
             if (e.KeyCode == Keys.Down)
             {
                 
-                if (!snakeUp)
+                if (!snakeUp && !gameOver)
                 {
                     snakeRight = false;
                     snakeLeft = false;
@@ -1136,7 +1220,7 @@ namespace EggenbergerGOL
             else if (e.KeyCode == Keys.Right)
             {
                 
-                if (!snakeLeft)
+                if (!snakeLeft && !gameOver)
                 {
                     snakeUp = false;
                     snakeDown = false;
@@ -1150,7 +1234,7 @@ namespace EggenbergerGOL
             else if (e.KeyCode == Keys.Up)
             {
                 
-                if (!snakeDown)
+                if (!snakeDown && !gameOver)
                 {
                     snakeRight = false;
                     snakeLeft = false;
@@ -1165,7 +1249,7 @@ namespace EggenbergerGOL
             else if (e.KeyCode == Keys.Left)
             {
                 
-                if (!snakeRight)
+                if (!snakeRight && !gameOver)
                 {
                     snakeUp = false;
                     snakeDown = false;
